@@ -1,9 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:technical_test_superindo/domain/entities/member.dart';
 import 'package:technical_test_superindo/presentation/bloc/member_bloc.dart';
@@ -167,7 +166,23 @@ class _MemberFormPageState extends State<MemberFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Data')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Tambah Data',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF333333)),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -175,20 +190,24 @@ class _MemberFormPageState extends State<MemberFormPage> {
           children: [
             // Info banner
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue[200]!),
+                color: const Color(0xFFE8EAF6),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue[700], size: 20),
-                  const SizedBox(width: 8),
+                  const Icon(Icons.info, color: Color(0xFF2B3A67), size: 20),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Nomor Handphone, NIK, Foto KTP dan Foto Ok wajib diisi sebelum di-upload',
-                      style: TextStyle(fontSize: 12, color: Colors.blue[700]),
+                      'Nomor Handphone, NIK, Foto KTP, dan Foto Diri wajib diisi sebelum disimpan / di-upload',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: const Color(0xFF2B3A67).withOpacity(0.8),
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
@@ -231,17 +250,22 @@ class _MemberFormPageState extends State<MemberFormPage> {
             ),
 
             const SizedBox(height: 16),
-            const Text('Foto KTP *', style: TextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                const Text('Foto KTP', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                const Text(' *', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+              ],
+            ),
             const SizedBox(height: 4),
             const Text(
               'Ambil 2 foto KTP untuk hasil yang lebih baik. Pastikan KTP terlihat jelas dan tidak blur.',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(fontSize: 11, color: Colors.grey),
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 _buildImagePicker(isPrimary: true),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 _buildImagePicker(isPrimary: false),
               ],
             ),
@@ -334,16 +358,30 @@ class _MemberFormPageState extends State<MemberFormPage> {
             const SizedBox(height: 32),
             ElevatedButton(
               onPressed: () => _save(false),
-              child: const Text('Upload'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFF3F4F9),
+                foregroundColor: Colors.grey[400],
+                elevation: 0,
+                minimumSize: const Size(double.infinity, 54),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Text('Upload', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () => _save(true),
               style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                minimumSize: const Size(double.infinity, 54),
+                side: const BorderSide(color: Color(0xFF2B3A67)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
-              child: const Text('Simpan sebagai Draft'),
+              child: const Text(
+                'Simpan sebagai Draft',
+                style: TextStyle(
+                  color: Color(0xFF2B3A67),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
             const SizedBox(height: 32),
           ],
@@ -354,11 +392,14 @@ class _MemberFormPageState extends State<MemberFormPage> {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.only(top: 24, bottom: 16),
       child: Text(
         title,
         style: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue),
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          color: Color(0xFF2B3A67),
+        ),
       ),
     );
   }
@@ -373,16 +414,21 @@ class _MemberFormPageState extends State<MemberFormPage> {
     String? Function(String?)? validator,
   }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          _buildLabel(label, isRequired: isRequired),
           const SizedBox(height: 8),
           TextFormField(
             controller: controller,
             keyboardType: keyboardType,
-            decoration: InputDecoration(hintText: hint, suffixIcon: suffix),
+            style: const TextStyle(fontSize: 14),
+            decoration: InputDecoration(
+              hintText: hint,
+              suffixIcon: suffix,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            ),
             validator: (v) {
               if (isRequired && (v == null || v.isEmpty)) {
                 return 'Wajib diisi';
@@ -395,6 +441,19 @@ class _MemberFormPageState extends State<MemberFormPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLabel(String label, {bool isRequired = false}) {
+    return Row(
+      children: [
+        Text(
+          label.replaceAll(' *', ''),
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF555555)),
+        ),
+        if (isRequired || label.contains('*'))
+          const Text(' *', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+      ],
     );
   }
 
@@ -427,17 +486,20 @@ class _MemberFormPageState extends State<MemberFormPage> {
   Widget _buildDropdown(
       String label, List<String> items, String value, Function(String?) onChanged) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          _buildLabel(label),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            initialValue: value,
+            value: value,
             items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
             onChanged: onChanged,
-            decoration: const InputDecoration(),
+            style: const TextStyle(fontSize: 14, color: Colors.black),
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
           ),
         ],
       ),
@@ -535,30 +597,27 @@ class _MemberFormPageState extends State<MemberFormPage> {
           height: 120,
           decoration: BoxDecoration(
             border: Border.all(
-                color: path != null ? Colors.green[300]! : Colors.grey[300]!),
-            borderRadius: BorderRadius.circular(8),
-            color: path != null ? Colors.green[50] : Colors.grey[50],
+              color: const Color(0xFFDCD6F7),
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
             image: path != null
                 ? DecorationImage(image: FileImage(File(path)), fit: BoxFit.cover)
                 : null,
           ),
           child: path == null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.camera_alt_outlined,
-                        color: Colors.blue[400], size: 32),
-                    const SizedBox(height: 4),
-                    Text(
-                      isPrimary ? 'Foto Utama' : 'Foto Kedua',
-                      style: TextStyle(fontSize: 11, color: Colors.blue[400]),
-                    ),
-                  ],
+              ? Center(
+                  child: Icon(
+                    Icons.camera_alt_outlined,
+                    color: const Color(0xFF2B3A67).withOpacity(0.5),
+                    size: 32,
+                  ),
                 )
               : Align(
                   alignment: Alignment.topRight,
                   child: Padding(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(8),
                     child: Container(
                       decoration: const BoxDecoration(
                         color: Colors.white,
