@@ -1,17 +1,52 @@
-# technical_test_superindo
+# Technical Test: Register Offline
 
-A new Flutter project.
+A Flutter application for offline-first member registration.
 
-## Getting Started
+## Features
+- **Offline-First Architecture**: Save member data locally to SQLite when offline.
+- **State Management**: Implemented using **BLoC** (Business Logic Component).
+- **Media Management**: Camera integration with automatic image compression using `flutter_image_compress`.
+- **Bulk Sync**: Sync all local "Draft" members to the server once online.
+- **Secure Authentication**: Secure token storage and auth-aware API requests.
 
-This project is a starting point for a Flutter application.
+## Tech Stack
+- **Framework**: Flutter
+- **State Management**: `flutter_bloc`
+- **Database**: `sqflite` (SQLite)
+- **Networking**: `dio`
+- **Dependency Injection**: `get_it`
+- **Local Storage**: `flutter_secure_storage`
 
-A few resources to get you started if this is your first Flutter project:
+## Project Structure
+```text
+lib/
+├── core/
+│   ├── api/          # Dio configuration & Auth interceptor
+│   ├── database/     # SQLite configuration
+│   ├── error/        # Failure & Exception classes
+│   ├── utils/        # Constants & Service locator
+├── data/
+│   ├── datasources/  # Remote & Local data sources
+│   ├── repositories/ # Repository implementations
+├── domain/
+│   ├── entities/     # Member entity
+│   ├── repositories/ # Repository interfaces
+└── presentation/
+    ├── bloc/         # Auth, Member, and Profile BLoCs
+    ├── pages/        # Main screens (Login, Dashboard, Form, Profile)
+    └── widgets/      # Reusable UI components
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## How to Run
+1. Ensure you have Flutter installed (Stable channel).
+2. Clone this repository.
+3. Run `flutter pub get` to install dependencies.
+4. Run the app:
+   ```bash
+   flutter run
+   ```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Key Highlights
+- **Clean Architecture**: Separation of concerns between Data, Domain, and Presentation layers.
+- **Image Optimization**: Images are compressed before being saved/uploaded to reduce storage and bandwidth usage.
+- **Error Handling**: Uses `dartz` for functional error handling with the `Either` type.
