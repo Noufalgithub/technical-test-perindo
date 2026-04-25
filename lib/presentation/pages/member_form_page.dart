@@ -12,7 +12,8 @@ import 'package:technical_test_superindo/presentation/bloc/location_bloc.dart';
 import 'package:technical_test_superindo/domain/entities/location.dart';
 
 class MemberFormPage extends StatefulWidget {
-  const MemberFormPage({super.key});
+  final Member? member;
+  const MemberFormPage({super.key, this.member});
 
   @override
   State<MemberFormPage> createState() => _MemberFormPageState();
@@ -29,6 +30,35 @@ class _MemberFormPageState extends State<MemberFormPage> {
     super.initState();
     _ktpLocationBloc = di.sl<LocationBloc>()..add(GetProvinces());
     _domisiliLocationBloc = di.sl<LocationBloc>()..add(GetProvinces());
+
+    if (widget.member != null) {
+      _nameController.text = widget.member!.name;
+      _nikController.text = widget.member!.nik;
+      _phoneController.text = widget.member!.phone;
+      _birthPlaceController.text = widget.member!.birthPlace;
+      _birthDateController.text = widget.member!.birthDate;
+      _selectedGender = widget.member!.gender;
+      _selectedStatus = widget.member!.status;
+      _occupationController.text = widget.member!.occupation;
+      _addressController.text = widget.member!.address;
+      _provinsiController.text = widget.member!.provinsi;
+      _kotaController.text = widget.member!.kotaKabupaten;
+      _kecamatanController.text = widget.member!.kecamatan;
+      _kelurahanController.text = widget.member!.kelurahan;
+      _kodePosController.text = widget.member!.kodePos;
+      
+      _addressDomisiliController.text = widget.member!.alamatDomisili;
+      _provinsiDomisiliController.text = widget.member!.provinsiDomisili;
+      _kotaDomisiliController.text = widget.member!.kotaKabupatenDomisili;
+      _kecamatanDomisiliController.text = widget.member!.kecamatanDomisili;
+      _kelurahanDomisiliController.text = widget.member!.kelurahanDomisili;
+      _kodePosDomisiliController.text = widget.member!.kodePosDomisili;
+      
+      _ktpPath = widget.member!.ktpPath;
+      _ktpSecondaryPath = widget.member!.ktpSecondaryPath;
+      _isDomisiliSameAsKtp = widget.member!.address == widget.member!.alamatDomisili && 
+                            widget.member!.provinsi == widget.member!.provinsiDomisili;
+    }
   }
 
   @override
@@ -163,14 +193,39 @@ class _MemberFormPageState extends State<MemberFormPage> {
             ),
 
             _buildSectionTitle('Data Utama'),
-            _buildTextField('Nomor Handphone *', _phoneController,
-                isRequired: true,
-                hint: 'Masukkan nomor handphone',
-                keyboardType: TextInputType.phone),
-            _buildTextField('NIK *', _nikController,
-                isRequired: true,
-                hint: '16 digit NIK KTP',
-                keyboardType: TextInputType.number),
+            _buildTextField(
+              'Nomor Handphone *',
+              _phoneController,
+              isRequired: true,
+              hint: 'Contoh: 08123456789',
+              keyboardType: TextInputType.phone,
+              validator: (v) {
+                if (v != null && v.isNotEmpty) {
+                  if (!RegExp(r'^(0|62|\+62)8[1-9][0-9]{6,12}$').hasMatch(v)) {
+                    return 'Format nomor HP tidak valid';
+                  }
+                }
+                return null;
+              },
+            ),
+            _buildTextField(
+              'NIK *',
+              _nikController,
+              isRequired: true,
+              hint: '16 digit NIK KTP',
+              keyboardType: TextInputType.number,
+              validator: (v) {
+                if (v != null && v.isNotEmpty) {
+                  if (v.length != 16) {
+                    return 'NIK harus 16 digit';
+                  }
+                  if (!RegExp(r'^[0-9]+$').hasMatch(v)) {
+                    return 'NIK hanya boleh angka';
+                  }
+                }
+                return null;
+              },
+            ),
 
             const SizedBox(height: 16),
             const Text('Foto KTP *', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -190,8 +245,19 @@ class _MemberFormPageState extends State<MemberFormPage> {
 
             const SizedBox(height: 24),
             _buildSectionTitle('Informasi Lainnya'),
-            _buildTextField('Nama Lengkap', _nameController,
-                hint: 'Masukkan nama sesuai KTP'),
+            _buildTextField(
+              'Nama Lengkap',
+              _nameController,
+              hint: 'Masukkan nama sesuai KTP',
+              validator: (v) {
+                if (v != null && v.isNotEmpty) {
+                  if (RegExp(r'[0-9]').hasMatch(v)) {
+                    return 'Nama tidak boleh mengandung angka';
+                  }
+                }
+                return null;
+              },
+            ),
             _buildTextField('Tempat Lahir', _birthPlaceController,
                 hint: 'Masukkan tempat lahir sesuai KTP'),
             _buildDateField(),
@@ -215,9 +281,18 @@ class _MemberFormPageState extends State<MemberFormPage> {
             _buildTextField('Alamat Lengkap', _addressController,
                 hint: 'Masukkan alamat lengkap'),
             _buildLocationDropdowns(_ktpLocationBloc, false),
-            _buildTextField('Kode Pos', _kodePosController,
-                hint: 'Masukkan kode pos',
-                keyboardType: TextInputType.number),
+            _buildTextField(
+              'Kode Pos',
+              _kodePosController,
+              hint: '5 digit kode pos',
+              keyboardType: TextInputType.number,
+              validator: (v) {
+                if (v != null && v.isNotEmpty && v.length != 5) {
+                  return 'Kode pos harus 5 digit';
+                }
+                return null;
+              },
+            ),
 
             const SizedBox(height: 24),
             Row(
@@ -239,9 +314,18 @@ class _MemberFormPageState extends State<MemberFormPage> {
               _buildTextField('Alamat Lengkap', _addressDomisiliController,
                   hint: 'Masukkan alamat domisili'),
               _buildLocationDropdowns(_domisiliLocationBloc, true),
-              _buildTextField('Kode Pos', _kodePosDomisiliController,
-                  hint: 'Masukkan kode pos domisili',
-                  keyboardType: TextInputType.number),
+              _buildTextField(
+                'Kode Pos',
+                _kodePosDomisiliController,
+                hint: '5 digit kode pos domisili',
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  if (v != null && v.isNotEmpty && v.length != 5) {
+                    return 'Kode pos harus 5 digit';
+                  }
+                  return null;
+                },
+              ),
             ],
 
             const SizedBox(height: 32),
@@ -283,6 +367,7 @@ class _MemberFormPageState extends State<MemberFormPage> {
     String? hint,
     Widget? suffix,
     TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -295,9 +380,15 @@ class _MemberFormPageState extends State<MemberFormPage> {
             controller: controller,
             keyboardType: keyboardType,
             decoration: InputDecoration(hintText: hint, suffixIcon: suffix),
-            validator: isRequired
-                ? (v) => (v == null || v.isEmpty) ? 'Wajib diisi' : null
-                : null,
+            validator: (v) {
+              if (isRequired && (v == null || v.isEmpty)) {
+                return 'Wajib diisi';
+              }
+              if (validator != null) {
+                return validator(v);
+              }
+              return null;
+            },
           ),
         ],
       ),
@@ -424,6 +515,7 @@ class _MemberFormPageState extends State<MemberFormPage> {
                 onChanged(selectedLocation.id);
               }
             },
+            validator: (v) => (v == null || v.isEmpty) ? 'Wajib dipilih' : null,
             decoration: const InputDecoration(hintText: 'Pilih'),
           ),
         ],
@@ -479,7 +571,10 @@ class _MemberFormPageState extends State<MemberFormPage> {
   }
 
   void _save(bool isDraft) {
-    if (_formKey.currentState!.validate()) {
+    // Only validate if not a draft
+    if (!isDraft) {
+      if (!_formKey.currentState!.validate()) return;
+      
       if (_ktpPath == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -489,58 +584,59 @@ class _MemberFormPageState extends State<MemberFormPage> {
         );
         return;
       }
-
-      final member = Member(
-        name: _nameController.text,
-        nik: _nikController.text,
-        phone: _phoneController.text,
-        birthPlace: _birthPlaceController.text,
-        birthDate: _birthDateController.text,
-        gender: _selectedGender,
-        status: _selectedStatus,
-        occupation: _occupationController.text,
-        address: _addressController.text,
-        provinsi: _provinsiController.text,
-        kotaKabupaten: _kotaController.text,
-        kecamatan: _kecamatanController.text,
-        kelurahan: _kelurahanController.text,
-        kodePos: _kodePosController.text,
-        alamatDomisili:
-            _isDomisiliSameAsKtp ? _addressController.text : _addressDomisiliController.text,
-        provinsiDomisili:
-            _isDomisiliSameAsKtp ? _provinsiController.text : _provinsiDomisiliController.text,
-        kotaKabupatenDomisili:
-            _isDomisiliSameAsKtp ? _kotaController.text : _kotaDomisiliController.text,
-        kecamatanDomisili:
-            _isDomisiliSameAsKtp ? _kecamatanController.text : _kecamatanDomisiliController.text,
-        kelurahanDomisili:
-            _isDomisiliSameAsKtp ? _kelurahanController.text : _kelurahanDomisiliController.text,
-        kodePosDomisili:
-            _isDomisiliSameAsKtp ? _kodePosController.text : _kodePosDomisiliController.text,
-        ktpPath: _ktpPath,
-        ktpSecondaryPath: _ktpSecondaryPath,
-        isSynced: false,
-      );
-
-      context.read<MemberBloc>().add(SaveMember(member));
-
-      if (isDraft) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Draft tersimpan!'),
-              ],
-            ),
-            backgroundColor: Colors.green[600],
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-
-      Navigator.pop(context);
     }
+
+    final member = Member(
+      id: widget.member?.id,
+      name: _nameController.text,
+      nik: _nikController.text,
+      phone: _phoneController.text,
+      birthPlace: _birthPlaceController.text,
+      birthDate: _birthDateController.text,
+      gender: _selectedGender,
+      status: _selectedStatus,
+      occupation: _occupationController.text,
+      address: _addressController.text,
+      provinsi: _provinsiController.text,
+      kotaKabupaten: _kotaController.text,
+      kecamatan: _kecamatanController.text,
+      kelurahan: _kelurahanController.text,
+      kodePos: _kodePosController.text,
+      alamatDomisili:
+          _isDomisiliSameAsKtp ? _addressController.text : _addressDomisiliController.text,
+      provinsiDomisili:
+          _isDomisiliSameAsKtp ? _provinsiController.text : _provinsiDomisiliController.text,
+      kotaKabupatenDomisili:
+          _isDomisiliSameAsKtp ? _kotaController.text : _kotaDomisiliController.text,
+      kecamatanDomisili:
+          _isDomisiliSameAsKtp ? _kecamatanController.text : _kecamatanDomisiliController.text,
+      kelurahanDomisili:
+          _isDomisiliSameAsKtp ? _kelurahanController.text : _kelurahanDomisiliController.text,
+      kodePosDomisili:
+          _isDomisiliSameAsKtp ? _kodePosController.text : _kodePosDomisiliController.text,
+      ktpPath: _ktpPath,
+      ktpSecondaryPath: _ktpSecondaryPath,
+      isSynced: false,
+    );
+
+    context.read<MemberBloc>().add(SaveMember(member));
+
+    if (isDraft) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Draft tersimpan!'),
+            ],
+          ),
+          backgroundColor: Colors.green[600],
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+
+    Navigator.pop(context);
   }
 }

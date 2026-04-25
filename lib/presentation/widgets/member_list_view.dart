@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:technical_test_superindo/presentation/bloc/member_bloc.dart';
+import 'package:technical_test_superindo/presentation/pages/member_form_page.dart';
 
 class MemberListView extends StatelessWidget {
   final bool isSynced;
@@ -113,7 +114,13 @@ class MemberListView extends StatelessWidget {
                             Expanded(
                               child: OutlinedButton.icon(
                                 onPressed: () {
-                                  // TODO: Implement Edit
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          MemberFormPage(member: member),
+                                    ),
+                                  );
                                 },
                                 icon: const Icon(Icons.edit, size: 16),
                                 label: const Text('Edit', style: TextStyle(fontSize: 12)),
