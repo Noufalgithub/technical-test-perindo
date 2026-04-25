@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:technical_test_superindo/domain/entities/member.dart';
 import 'package:technical_test_superindo/presentation/bloc/member_bloc.dart';
+import 'package:technical_test_superindo/presentation/pages/ktp_camera_page.dart';
 import 'package:technical_test_superindo/core/service_locator.dart' as di;
 import 'package:technical_test_superindo/presentation/bloc/location_bloc.dart';
 import 'package:technical_test_superindo/domain/entities/location.dart';
@@ -114,12 +115,14 @@ class _MemberFormPageState extends State<MemberFormPage> {
   String? _ktpPath;
   String? _ktpSecondaryPath;
 
-  final _picker = ImagePicker();
-
   Future<void> _pickImage(bool isPrimary) async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.camera);
-    if (image != null) {
-      final compressedFile = await _compressImage(File(image.path));
+    final String? imagePath = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const KtpCameraPage()),
+    );
+
+    if (imagePath != null) {
+      final compressedFile = await _compressImage(File(imagePath));
       setState(() {
         if (isPrimary) {
           _ktpPath = compressedFile.path;
