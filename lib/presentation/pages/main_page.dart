@@ -34,11 +34,20 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0.5,
         title: Row(
           children: [
-            const Icon(Icons.badge_outlined, color: Color(0xFF2C3E50)),
+            const Icon(Icons.badge_outlined, color: Color(0xFF2B3A67)),
             const SizedBox(width: 8),
-            const Text('Register Offline', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'Register Offline',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2B3A67),
+              ),
+            ),
             const Spacer(),
             BlocBuilder<ProfileBloc, ProfileState>(
               builder: (context, state) {
@@ -49,16 +58,28 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
                 return InkWell(
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ProfilePage())),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey[300]!),
-                      borderRadius: BorderRadius.circular(20),
+                      color: Colors.white,
+                      border: Border.all(color: const Color(0xFFE0E0E0)),
+                      borderRadius: BorderRadius.circular(24),
                     ),
                     child: Row(
                       children: [
-                        Text(name, style: const TextStyle(fontSize: 12)),
-                        const SizedBox(width: 4),
-                        const Icon(Icons.account_circle_outlined, size: 20),
+                        Text(
+                          name.split(' ').first,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF333333),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Icon(
+                          Icons.account_circle,
+                          size: 18,
+                          color: Color(0xFF2B3A67),
+                        ),
                       ],
                     ),
                   ),
@@ -69,6 +90,11 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         ),
         bottom: TabBar(
           controller: _tabController,
+          indicatorColor: const Color(0xFF2B3A67),
+          indicatorWeight: 3,
+          labelColor: const Color(0xFF2B3A67),
+          unselectedLabelColor: Colors.grey,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           tabs: const [
             Tab(text: 'Draft'),
             Tab(text: 'Sudah Di-Upload'),
@@ -83,29 +109,67 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         ],
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ElevatedButton.icon(
+            ElevatedButton(
               onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MemberFormPage())),
-              icon: const Icon(Icons.add),
-              label: const Text('Tambah Data'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2B3A67),
+                foregroundColor: Colors.white,
+                minimumSize: const Size(double.infinity, 54),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.add, size: 20),
+                  SizedBox(width: 8),
+                  Text('Tambah Data', style: TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             BlocBuilder<MemberBloc, MemberState>(
               builder: (context, state) {
                 bool hasDrafts = false;
-                if (state is MemberLoaded && _tabController.index == 0) {
-                  hasDrafts = state.members.isNotEmpty;
+                int draftCount = 0;
+                if (state is MemberLoaded) {
+                  final drafts = state.members.where((m) => !m.isSynced).toList();
+                  hasDrafts = drafts.isNotEmpty;
+                  draftCount = drafts.length;
                 }
-                return OutlinedButton.icon(
+                return OutlinedButton(
                   onPressed: hasDrafts ? () => _showSyncDialog(context) : null,
-                  icon: const Icon(Icons.upload),
-                  label: Text('Upload Semua${(hasDrafts && state is MemberLoaded) ? ' (${state.members.length})' : ''}'),
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    minimumSize: const Size(double.infinity, 54),
+                    side: BorderSide(color: hasDrafts ? const Color(0xFF2B3A67) : Colors.grey[300]!),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.file_upload_outlined, size: 20, color: hasDrafts ? const Color(0xFF2B3A67) : Colors.grey),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Upload Semua${hasDrafts ? ' ($draftCount)' : ''}',
+                        style: TextStyle(
+                          color: hasDrafts ? const Color(0xFF2B3A67) : Colors.grey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 );
               },

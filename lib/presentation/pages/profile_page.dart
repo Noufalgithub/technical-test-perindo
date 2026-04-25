@@ -10,7 +10,23 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text(
+          'Profile',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF333333),
+          ),
+        ),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF333333)),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthUnauthenticated) {
@@ -27,31 +43,93 @@ class ProfilePage extends StatelessWidget {
             } else if (state is ProfileLoaded) {
               final user = state.userData;
               return Padding(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   children: [
-                    const CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
+                    const SizedBox(height: 20),
+                    // Profile Header
+                    Center(
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.blue[50],
+                              image: const DecorationImage(
+                                image: NetworkImage('https://i.pravatar.cc/300'), // Placeholder for demo
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            user['full_name'] ?? 'Yudi Wiranto',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              color: Color(0xFF2B3A67),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            user['location'] ?? 'Menteng, Jakarta Pusat, DKI Jakarta',
+                            style: const TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            user['email'] ?? 'yudiwiranto12@gmail.com',
+                            style: const TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 40),
+
+                    // Menu Items
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F4F9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildMenuItem(
+                            icon: Icons.password_outlined,
+                            title: 'Ganti Password',
+                            onTap: () {},
+                          ),
+                          const Divider(height: 1, indent: 56),
+                          _buildMenuItem(
+                            icon: Icons.help_outline,
+                            title: 'Bantuan',
+                            onTap: () {},
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 16),
-                    Text(user['full_name'] ?? 'User', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    Text(user['email'] ?? '', style: const TextStyle(color: Colors.grey)),
-                    const SizedBox(height: 32),
-                    ListTile(
-                      leading: const Icon(Icons.lock_outline),
-                      title: const Text('Ganti Password'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {},
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF3F4F9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: _buildMenuItem(
+                        icon: Icons.logout,
+                        title: 'Keluar',
+                        titleColor: Colors.red[700],
+                        iconColor: Colors.red[700],
+                        onTap: () => _showLogoutDialog(context),
+                      ),
                     ),
-                    ListTile(
-                      leading: const Icon(Icons.help_outline),
-                      title: const Text('Bantuan'),
-                      trailing: const Icon(Icons.chevron_right),
-                      onTap: () {},
-                    ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.logout, color: Colors.red),
-                      title: const Text('Keluar', style: TextStyle(color: Colors.red)),
-                      onTap: () => _showLogoutDialog(context),
+                    const Spacer(),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 24),
+                      child: Text(
+                        'v1.0.1',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
                     ),
                   ],
                 ),
@@ -63,6 +141,29 @@ class ProfilePage extends StatelessWidget {
           },
         ),
       ),
+    );
+  }
+
+  Widget _buildMenuItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    Color? iconColor,
+    Color? titleColor,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: iconColor ?? const Color(0xFF333333), size: 22),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: titleColor ?? const Color(0xFF333333),
+        ),
+      ),
+      trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
     );
   }
 

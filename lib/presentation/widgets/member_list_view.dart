@@ -69,85 +69,190 @@ class MemberListView extends StatelessWidget {
           }
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: state.members.length,
+            itemCount: state.members.length + 1,
             itemBuilder: (context, index) {
-              final member = state.members[index];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
+              if (index == 0) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      leading: _buildKtpThumbnail(member.ktpPath),
-                      title: Text(
-                        member.nik,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 14),
+                    Text(
+                      isSynced ? 'Data yang sudah di-upload' : 'List Draft KTA',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Color(0xFF333333),
                       ),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (member.name.isNotEmpty)
-                            Text(
-                              member.name,
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          Text(
-                            member.phone,
-                            style: const TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                      trailing: _buildStatusBadge(isSynced),
                     ),
-                    if (!isSynced)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
+                    const SizedBox(height: 4),
+                    Text(
+                      isSynced
+                          ? 'Data-data ini sudah dikirimkan ke admin verifikator.'
+                          : 'Upload untuk mengirimkan data ini ke admin untuk di-verifikasi.',
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    if (!isSynced) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE8EAF6),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         child: Row(
                           children: [
+                            const Icon(Icons.info, color: Color(0xFF2B3A67), size: 20),
+                            const SizedBox(width: 12),
                             Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          MemberFormPage(member: member),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.edit, size: 16),
-                                label: const Text('Edit', style: TextStyle(fontSize: 12)),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 4),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () {
-                                  context
-                                      .read<MemberBloc>()
-                                      .add(SyncMember(member));
-                                },
-                                icon: const Icon(Icons.upload, size: 16),
-                                label:
-                                    const Text('Upload', style: TextStyle(fontSize: 12)),
-                                style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: Text(
+                                'Nomor Handphone, NIK, dan Foto KTP wajib diisi sebelum di-upload',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: const Color(0xFF2B3A67).withOpacity(0.8),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
+                    ],
+                    const SizedBox(height: 24),
+                  ],
+                );
+              }
+
+              final member = state.members[index - 1];
+              return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          // Index Number
+                          Container(
+                            width: 32,
+                            height: 32,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF3F4F9),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Center(
+                              child: Text(
+                                '$index',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF2B3A67),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // KTP Thumbnail
+                          _buildKtpThumbnail(member.ktpPath),
+                          const SizedBox(width: 12),
+                          // Details
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isSynced ? _maskText(member.nik, 3, 3) : member.nik,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 14,
+                                    color: Color(0xFF333333),
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  isSynced ? _maskText(member.phone, 4, 3) : member.phone,
+                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Status Badge
+                          _buildStatusBadge(isSynced),
+                        ],
+                      ),
+                    ),
+                    if (!isSynced) ...[
+                      const Divider(height: 1),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MemberFormPage(member: member),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF2B3A67)),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Edit',
+                                      style: TextStyle(
+                                        color: Color(0xFF2B3A67),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          Container(width: 1, height: 24, color: Colors.grey[200]),
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                context.read<MemberBloc>().add(SyncMember(member));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.file_upload_outlined, size: 18, color: Color(0xFF2B3A67)),
+                                    const SizedBox(width: 8),
+                                    const Text(
+                                      'Upload',
+                                      style: TextStyle(
+                                        color: Color(0xFF2B3A67),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               );
@@ -160,40 +265,40 @@ class MemberListView extends StatelessWidget {
   }
 
   Widget _buildKtpThumbnail(String? ktpPath) {
-    if (ktpPath != null && File(ktpPath).existsSync()) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: Image.file(
-          File(ktpPath),
-          width: 56,
-          height: 56,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stack) => _defaultAvatar(),
-        ),
-      );
-    }
-    return _defaultAvatar();
+    return Container(
+      width: 48,
+      height: 32,
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F4F9),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: const Color(0xFFE0E0E0)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: ktpPath != null && File(ktpPath).existsSync()
+            ? Image.file(
+                File(ktpPath),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stack) => _defaultThumbnailIcon(),
+              )
+            : _defaultThumbnailIcon(),
+      ),
+    );
   }
 
-  Widget _defaultAvatar() {
-    return CircleAvatar(
-      backgroundColor: Colors.blue[50],
-      child: Icon(Icons.person, color: Colors.blue[300]),
-    );
+  Widget _defaultThumbnailIcon() {
+    return const Icon(Icons.image_outlined, size: 16, color: Colors.grey);
   }
 
   Widget _buildStatusBadge(bool synced) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: synced ? Colors.green[50] : Colors.orange[50],
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(
-          color: synced ? Colors.green[200]! : Colors.orange[200]!,
-        ),
+        color: synced ? const Color(0xFFE8F5E9) : const Color(0xFFFFF8E1),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
-        synced ? 'Di-upload' : 'Draft',
+        synced ? 'Sudah Di-upload' : 'Draft',
         style: TextStyle(
           color: synced ? Colors.green[700] : Colors.orange[700],
           fontSize: 10,
@@ -201,5 +306,13 @@ class MemberListView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _maskText(String text, int startVisible, int endVisible) {
+    if (text.length <= startVisible + endVisible) return text;
+    final start = text.substring(0, startVisible);
+    final end = text.substring(text.length - endVisible);
+    final middle = '*' * (text.length - startVisible - endVisible);
+    return '$start$middle$end';
   }
 }
