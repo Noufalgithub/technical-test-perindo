@@ -4,6 +4,7 @@ import 'package:technical_test_superindo/core/service_locator.dart' as di;
 import 'package:technical_test_superindo/presentation/bloc/auth_bloc.dart';
 import 'package:technical_test_superindo/presentation/bloc/member_bloc.dart';
 import 'package:technical_test_superindo/presentation/bloc/profile_bloc.dart';
+import 'package:technical_test_superindo/core/theme/app_theme.dart';
 import 'package:technical_test_superindo/presentation/pages/splash_page.dart';
 
 void main() async {
@@ -26,30 +27,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Register Offline',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF2C3E50),
-            primary: const Color(0xFF2C3E50),
-          ),
-          useMaterial3: true,
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            filled: true,
-            fillColor: Colors.grey[50],
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2C3E50),
-              foregroundColor: Colors.white,
-              minimumSize: const Size(double.infinity, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ),
+        theme: AppTheme.lightTheme,
         home: const SplashPage(),
         builder: (context, child) {
           return SafeArea(

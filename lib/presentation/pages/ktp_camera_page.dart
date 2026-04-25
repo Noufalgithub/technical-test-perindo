@@ -82,7 +82,7 @@ class _KtpCameraPageState extends State<KtpCameraPage> {
           Positioned.fill(
             child: ColorFiltered(
               colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.7),
+                Colors.black.withValues(alpha: 0.7),
                 BlendMode.srcOut,
               ),
               child: Stack(
@@ -147,7 +147,7 @@ class _KtpCameraPageState extends State<KtpCameraPage> {
                         'Atur pencahayaan dan pastikan teks pada KTP terbaca dengan jelas',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 13,
                         ),
                       ),

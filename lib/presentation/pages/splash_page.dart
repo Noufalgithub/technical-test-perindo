@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technical_test_superindo/core/theme/app_colors.dart';
 import 'package:technical_test_superindo/presentation/bloc/auth_bloc.dart';
 import 'package:technical_test_superindo/presentation/pages/login_page.dart';
 import 'package:technical_test_superindo/presentation/pages/main_page.dart';
@@ -22,19 +23,20 @@ class SplashPage extends StatelessWidget {
         }
       },
       child: const Scaffold(
-        backgroundColor: Color(0xFF5369A5),
+        backgroundColor: AppColors.primary,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.badge_outlined, size: 100, color: Colors.white),
-              SizedBox(height: 16),
+              Icon(Icons.badge_outlined, size: 80, color: Colors.white),
+              SizedBox(height: 24),
               Text(
                 'Register Offline',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.2,
                 ),
               ),
             ],

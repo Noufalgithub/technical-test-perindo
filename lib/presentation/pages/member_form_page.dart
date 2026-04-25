@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:technical_test_superindo/core/theme/app_colors.dart';
 import 'package:technical_test_superindo/domain/entities/member.dart';
 import 'package:technical_test_superindo/presentation/bloc/member_bloc.dart';
 import 'package:technical_test_superindo/presentation/pages/ktp_camera_page.dart';
@@ -173,13 +174,13 @@ class _MemberFormPageState extends State<MemberFormPage> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF333333),
+            color: AppColors.primary,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF333333)),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -198,14 +199,14 @@ class _MemberFormPageState extends State<MemberFormPage> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.info, color: Color(0xFF2B3A67), size: 20),
+                  const Icon(Icons.info, color: AppColors.primary, size: 20),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'Nomor Handphone, NIK, Foto KTP, dan Foto Diri wajib diisi sebelum disimpan / di-upload',
                       style: TextStyle(
                         fontSize: 12,
-                        color: const Color(0xFF2B3A67).withOpacity(0.8),
+                        color: AppColors.primary.withValues(alpha: 0.8),
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -359,8 +360,8 @@ class _MemberFormPageState extends State<MemberFormPage> {
             ElevatedButton(
               onPressed: () => _save(false),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFF3F4F9),
-                foregroundColor: Colors.grey[400],
+                backgroundColor: AppColors.surface,
+                foregroundColor: AppColors.textGrey,
                 elevation: 0,
                 minimumSize: const Size(double.infinity, 54),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -372,13 +373,13 @@ class _MemberFormPageState extends State<MemberFormPage> {
               onPressed: () => _save(true),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 54),
-                side: const BorderSide(color: Color(0xFF2B3A67)),
+                side: const BorderSide(color: AppColors.primary),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
               child: const Text(
                 'Simpan sebagai Draft',
                 style: TextStyle(
-                  color: Color(0xFF2B3A67),
+                  color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -398,7 +399,7 @@ class _MemberFormPageState extends State<MemberFormPage> {
         style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w900,
-          color: Color(0xFF2B3A67),
+          color: AppColors.primary,
         ),
       ),
     );
@@ -452,7 +453,7 @@ class _MemberFormPageState extends State<MemberFormPage> {
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF555555)),
         ),
         if (isRequired || label.contains('*'))
-          const Text(' *', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          const Text(' *', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -493,7 +494,7 @@ class _MemberFormPageState extends State<MemberFormPage> {
           _buildLabel(label),
           const SizedBox(height: 8),
           DropdownButtonFormField<String>(
-            value: value,
+            initialValue: value,
             items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
             onChanged: onChanged,
             style: const TextStyle(fontSize: 14, color: Colors.black),
@@ -610,7 +611,7 @@ class _MemberFormPageState extends State<MemberFormPage> {
               ? Center(
                   child: Icon(
                     Icons.camera_alt_outlined,
-                    color: const Color(0xFF2B3A67).withOpacity(0.5),
+                    color: AppColors.primary.withValues(alpha: 0.5),
                     size: 32,
                   ),
                 )

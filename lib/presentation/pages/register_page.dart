@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technical_test_superindo/core/theme/app_colors.dart';
 import 'package:technical_test_superindo/presentation/bloc/auth_bloc.dart';
 import 'package:technical_test_superindo/presentation/pages/main_page.dart';
 import 'package:technical_test_superindo/presentation/pages/login_page.dart';
@@ -54,24 +55,44 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 80),
-                const Icon(Icons.person_add_alt_1_outlined, size: 40, color: Color(0xFF2C3E50)),
-                const SizedBox(height: 16),
-                const Text(
-                  'Register Offline',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                const SizedBox(height: 60),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Icon(Icons.badge_outlined, size: 20, color: Colors.white),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Register Offline',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 48),
                 const Text(
                   'Daftar Akun Baru',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.textMain,
+                  ),
                 ),
+                const SizedBox(height: 8),
                 const Text(
                   'Masukkan data diri Anda untuk mendaftar',
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
-                const SizedBox(height: 32),
-                const Text('Nama Lengkap *', style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 40),
+                _buildLabel('Nama Lengkap *'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _nameController,
@@ -79,7 +100,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: (value) => value!.isEmpty ? 'Nama wajib diisi' : null,
                 ),
                 const SizedBox(height: 16),
-                const Text('Email *', style: TextStyle(fontWeight: FontWeight.bold)),
+                _buildLabel('Email *'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
@@ -88,7 +109,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   validator: (value) => value!.isEmpty ? 'Email wajib diisi' : null,
                 ),
                 const SizedBox(height: 16),
-                const Text('Nomor HP (Opsional)', style: TextStyle(fontWeight: FontWeight.bold)),
+                _buildLabel('Nomor HP (Opsional)'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _phoneController,
@@ -96,7 +117,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   decoration: const InputDecoration(hintText: 'Masukkan nomor HP (0812...)'),
                 ),
                 const SizedBox(height: 16),
-                const Text('Password *', style: TextStyle(fontWeight: FontWeight.bold)),
+                _buildLabel('Password *'),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _passwordController,
@@ -137,22 +158,49 @@ class _RegisterPageState extends State<RegisterPage> {
                     );
                   },
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 40),
                 Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(builder: (_) => const LoginPage()),
-                      );
-                    },
-                    child: const Text('Sudah punya akun? Masuk di sini',
-                        style: TextStyle(color: Colors.blue)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Sudah punya akun? ',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(builder: (_) => const LoginPage()),
+                          );
+                        },
+                        child: const Text(
+                          'Masuk di sini',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                const SizedBox(height: 40),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: Color(0xFF555555),
       ),
     );
   }

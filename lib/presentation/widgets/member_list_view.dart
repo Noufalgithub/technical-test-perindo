@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technical_test_superindo/core/theme/app_colors.dart';
+import 'package:technical_test_superindo/core/utils/string_utils.dart';
 import 'package:technical_test_superindo/presentation/bloc/member_bloc.dart';
 import 'package:technical_test_superindo/presentation/pages/member_form_page.dart';
 
@@ -107,7 +109,7 @@ class MemberListView extends StatelessWidget {
                                 'Nomor Handphone, NIK, dan Foto KTP wajib diisi sebelum di-upload',
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: const Color(0xFF2B3A67).withOpacity(0.8),
+                                  color: AppColors.primary.withValues(alpha: 0.8),
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
@@ -129,7 +131,7 @@ class MemberListView extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 10,
                       offset: const Offset(0, 2),
                     ),
@@ -146,7 +148,7 @@ class MemberListView extends StatelessWidget {
                             width: 32,
                             height: 32,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF3F4F9),
+                              color: AppColors.surface,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Center(
@@ -154,7 +156,7 @@ class MemberListView extends StatelessWidget {
                                 '$index',
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFF2B3A67),
+                                  color: AppColors.primary,
                                   fontSize: 12,
                                 ),
                               ),
@@ -170,17 +172,17 @@ class MemberListView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  isSynced ? _maskText(member.nik, 3, 3) : member.nik,
+                                  isSynced ? StringUtils.maskText(member.nik, 3, 3) : member.nik,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w900,
                                     fontSize: 14,
-                                    color: Color(0xFF333333),
+                                    color: AppColors.textMain,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  isSynced ? _maskText(member.phone, 4, 3) : member.phone,
-                                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                  isSynced ? StringUtils.maskText(member.phone, 4, 3) : member.phone,
+                                  style: const TextStyle(fontSize: 12, color: AppColors.textGrey),
                                 ),
                               ],
                             ),
@@ -209,12 +211,12 @@ class MemberListView extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.edit_outlined, size: 18, color: Color(0xFF2B3A67)),
+                                    const Icon(Icons.edit_outlined, size: 18, color: AppColors.primary),
                                     const SizedBox(width: 8),
                                     const Text(
                                       'Edit',
                                       style: TextStyle(
-                                        color: Color(0xFF2B3A67),
+                                        color: AppColors.primary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13,
                                       ),
@@ -235,12 +237,12 @@ class MemberListView extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.file_upload_outlined, size: 18, color: Color(0xFF2B3A67)),
+                                    const Icon(Icons.file_upload_outlined, size: 18, color: AppColors.primary),
                                     const SizedBox(width: 8),
                                     const Text(
                                       'Upload',
                                       style: TextStyle(
-                                        color: Color(0xFF2B3A67),
+                                        color: AppColors.primary,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13,
                                       ),
@@ -269,9 +271,9 @@ class MemberListView extends StatelessWidget {
       width: 48,
       height: 32,
       decoration: BoxDecoration(
-        color: const Color(0xFFF3F4F9),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: const Color(0xFFE0E0E0)),
+        border: Border.all(color: AppColors.grey300),
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(4),
@@ -287,32 +289,24 @@ class MemberListView extends StatelessWidget {
   }
 
   Widget _defaultThumbnailIcon() {
-    return const Icon(Icons.image_outlined, size: 16, color: Colors.grey);
+    return const Icon(Icons.image_outlined, size: 16, color: AppColors.textGrey);
   }
 
   Widget _buildStatusBadge(bool synced) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: synced ? const Color(0xFFE8F5E9) : const Color(0xFFFFF8E1),
+        color: synced ? AppColors.syncedBadgeBg : AppColors.draftBadgeBg,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         synced ? 'Sudah Di-upload' : 'Draft',
         style: TextStyle(
-          color: synced ? Colors.green[700] : Colors.orange[700],
+          color: synced ? AppColors.success : AppColors.grey,
           fontSize: 10,
           fontWeight: FontWeight.bold,
         ),
       ),
     );
-  }
-
-  String _maskText(String text, int startVisible, int endVisible) {
-    if (text.length <= startVisible + endVisible) return text;
-    final start = text.substring(0, startVisible);
-    final end = text.substring(text.length - endVisible);
-    final middle = '*' * (text.length - startVisible - endVisible);
-    return '$start$middle$end';
   }
 }

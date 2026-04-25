@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technical_test_superindo/core/theme/app_colors.dart';
 import 'package:technical_test_superindo/presentation/bloc/auth_bloc.dart';
 import 'package:technical_test_superindo/presentation/pages/main_page.dart';
 import 'package:technical_test_superindo/presentation/pages/register_page.dart';
@@ -49,8 +50,8 @@ class _LoginPageState extends State<LoginPage> {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                const Color(0xFFDCD6F7).withOpacity(0.3),
-                Colors.white,
+                const Color(0xFFDCD6F7).withValues(alpha: 0.3),
+                AppColors.background,
               ],
               stops: const [0.0, 0.4],
             ),
@@ -69,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF2B3A67),
+                            color: AppColors.primary,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: const Icon(Icons.badge_outlined, size: 20, color: Colors.white),
@@ -80,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w900,
-                            color: Color(0xFF2B3A67),
+                            color: AppColors.primary,
                           ),
                         ),
                       ],
@@ -150,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2B3A67),
+                            backgroundColor: AppColors.primary,
                             foregroundColor: Colors.white,
                             minimumSize: const Size(double.infinity, 54),
                             shape: RoundedRectangleBorder(
@@ -183,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: const Text(
                               'Klik Bantuan',
                               style: TextStyle(
-                                color: Color(0xFF2B3A67),
+                                color: AppColors.primary,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),

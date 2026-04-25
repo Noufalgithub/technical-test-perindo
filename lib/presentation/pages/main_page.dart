@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technical_test_superindo/core/theme/app_colors.dart';
 import 'package:technical_test_superindo/presentation/bloc/member_bloc.dart';
 import 'package:technical_test_superindo/presentation/bloc/profile_bloc.dart';
 import 'package:technical_test_superindo/presentation/pages/member_form_page.dart';
@@ -38,14 +39,14 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         elevation: 0.5,
         title: Row(
           children: [
-            const Icon(Icons.badge_outlined, color: Color(0xFF2B3A67)),
+            const Icon(Icons.badge_outlined, color: AppColors.primary),
             const SizedBox(width: 8),
             const Text(
               'Register Offline',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2B3A67),
+                color: AppColors.primary,
               ),
             ),
             const Spacer(),
@@ -111,10 +112,10 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.background,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -5),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:technical_test_superindo/core/theme/app_colors.dart';
 import 'package:technical_test_superindo/presentation/bloc/auth_bloc.dart';
 import 'package:technical_test_superindo/presentation/bloc/profile_bloc.dart';
 import 'package:technical_test_superindo/presentation/pages/login_page.dart';
@@ -17,13 +18,13 @@ class ProfilePage extends StatelessWidget {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF333333),
+            color: AppColors.primary,
           ),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF333333)),
+          icon: const Icon(Icons.arrow_back, color: AppColors.primary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -69,7 +70,7 @@ class ProfilePage extends StatelessWidget {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
-                              color: Color(0xFF2B3A67),
+                              color: AppColors.primary,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -90,7 +91,7 @@ class ProfilePage extends StatelessWidget {
                     // Menu Items
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F9),
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Column(
@@ -112,7 +113,7 @@ class ProfilePage extends StatelessWidget {
                     const SizedBox(height: 16),
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF3F4F9),
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: _buildMenuItem(
@@ -152,13 +153,13 @@ class ProfilePage extends StatelessWidget {
     Color? titleColor,
   }) {
     return ListTile(
-      leading: Icon(icon, color: iconColor ?? const Color(0xFF333333), size: 22),
+      leading: Icon(icon, color: iconColor ?? AppColors.textMain, size: 22),
       title: Text(
         title,
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: titleColor ?? const Color(0xFF333333),
+          color: titleColor ?? AppColors.textMain,
         ),
       ),
       trailing: const Icon(Icons.chevron_right, size: 20, color: Colors.grey),
@@ -192,7 +193,7 @@ class ProfilePage extends StatelessWidget {
               Navigator.pop(context);
               context.read<AuthBloc>().add(LogoutRequested());
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2C3E50)),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
             child: const Text('Ya, Keluar'),
           ),
           const SizedBox(height: 8),
