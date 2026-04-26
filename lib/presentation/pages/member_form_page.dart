@@ -203,7 +203,7 @@ class _MemberFormPageState extends State<MemberFormPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Nomor Handphone, NIK, Foto KTP, dan Foto Diri wajib diisi sebelum disimpan / di-upload',
+                      'Nama Lengkap, Nomor Handphone, NIK, Foto KTP, dan Foto Diri wajib diisi sebelum disimpan / di-upload',
                       style: TextStyle(
                         fontSize: 12,
                         color: AppColors.primary.withValues(alpha: 0.8),
@@ -274,8 +274,9 @@ class _MemberFormPageState extends State<MemberFormPage> {
             const SizedBox(height: 24),
             _buildSectionTitle('Informasi Lainnya'),
             _buildTextField(
-              'Nama Lengkap',
+              'Nama Lengkap *',
               _nameController,
+              isRequired: true,
               hint: 'Masukkan nama sesuai KTP',
               validator: (v) {
                 if (v != null && v.isNotEmpty) {
@@ -357,32 +358,54 @@ class _MemberFormPageState extends State<MemberFormPage> {
             ],
 
             const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: () => _save(false),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.surface,
-                foregroundColor: AppColors.textGrey,
-                elevation: 0,
-                minimumSize: const Size(double.infinity, 54),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text('Upload', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: () => _save(true),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 54),
-                side: const BorderSide(color: AppColors.primary),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              child: const Text(
-                'Simpan sebagai Draft',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+            BlocConsumer<MemberBloc, MemberState>(
+              listener: (context, state) {
+                if (state.isSyncSuccess) {
+                  Navigator.pop(context);
+                } else if (state.errorMessage != null && !state.isLoading) {
+                  // Error is handled by global listener usually, 
+                  // but we might want to stay on the page.
+                }
+              },
+              builder: (context, state) {
+                return Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: state.isLoading ? null : () => _save(false),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 2,
+                        minimumSize: const Size(double.infinity, 54),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: state.isLoading 
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          )
+                        : const Text('Upload Sekarang', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: state.isLoading ? null : () => _save(true),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 54),
+                        side: const BorderSide(color: AppColors.primary),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                      child: const Text(
+                        'Simpan sebagai Draft',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 32),
           ],
@@ -604,7 +627,9 @@ class _MemberFormPageState extends State<MemberFormPage> {
             borderRadius: BorderRadius.circular(12),
             color: Colors.white,
             image: path != null
-                ? DecorationImage(image: FileImage(File(path)), fit: BoxFit.cover)
+                ? (path.startsWith('http') 
+                    ? DecorationImage(image: NetworkImage(path), fit: BoxFit.cover)
+                    : DecorationImage(image: FileImage(File(path)), fit: BoxFit.cover))
                 : null,
           ),
           child: path == null
@@ -682,7 +707,11 @@ class _MemberFormPageState extends State<MemberFormPage> {
       isSynced: false,
     );
 
-    context.read<MemberBloc>().add(SaveMember(member));
+    if (isDraft) {
+      context.read<MemberBloc>().add(SaveMember(member));
+    } else {
+      context.read<MemberBloc>().add(SyncMember(member));
+    }
 
     if (isDraft) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -699,7 +728,5 @@ class _MemberFormPageState extends State<MemberFormPage> {
         ),
       );
     }
-
-    Navigator.pop(context);
   }
 }

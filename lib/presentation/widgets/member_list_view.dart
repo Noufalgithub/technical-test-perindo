@@ -14,7 +14,7 @@ class MemberListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocConsumer<MemberBloc, MemberState>(
       listener: (context, state) {
-        if (state is MemberSyncSuccess) {
+        if (state.isSyncSuccess) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Row(
@@ -28,20 +28,23 @@ class MemberListView extends StatelessWidget {
               duration: const Duration(seconds: 2),
             ),
           );
-        } else if (state is MemberFailure) {
+        } else if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(state.errorMessage!),
               backgroundColor: Colors.red[600],
             ),
           );
         }
       },
       builder: (context, state) {
-        if (state is MemberLoading) {
+        final members = isSynced ? state.syncedMembers : state.draftMembers;
+
+        if (state.isLoading && members.isEmpty) {
           return const Center(child: CircularProgressIndicator());
-        } else if (state is MemberLoaded) {
-          if (state.members.isEmpty) {
+        }
+        
+        if (members.isEmpty) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -69,9 +72,11 @@ class MemberListView extends StatelessWidget {
               ),
             );
           }
+          
+
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: state.members.length + 1,
+            itemCount: members.length + 1,
             itemBuilder: (context, index) {
               if (index == 0) {
                 return Column(
@@ -98,20 +103,17 @@ class MemberListView extends StatelessWidget {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: const Color(0xFFE8EAF6),
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0xFFC5CAE9)),
                         ),
-                        child: Row(
+                        child: const Row(
                           children: [
-                            const Icon(Icons.info, color: Color(0xFF2B3A67), size: 20),
-                            const SizedBox(width: 12),
+                            Icon(Icons.info_outline, size: 16, color: Color(0xFF3F51B5)),
+                            SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Nomor Handphone, NIK, dan Foto KTP wajib diisi sebelum di-upload',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: AppColors.primary.withValues(alpha: 0.8),
-                                  fontWeight: FontWeight.w500,
-                                ),
+                                'Data di bawah ini tersimpan secara lokal. Silahkan klik upload semua untuk sinkronisasi.',
+                                style: TextStyle(fontSize: 11, color: Color(0xFF3F51B5)),
                               ),
                             ),
                           ],
@@ -123,7 +125,7 @@ class MemberListView extends StatelessWidget {
                 );
               }
 
-              final member = state.members[index - 1];
+              final member = members[index - 1];
               return Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
@@ -164,7 +166,7 @@ class MemberListView extends StatelessWidget {
                           ),
                           const SizedBox(width: 12),
                           // KTP Thumbnail
-                          _buildKtpThumbnail(member.ktpPath),
+                          _buildKtpThumbnail(member.ktpPath, member.ktpUrl),
                           const SizedBox(width: 12),
                           // Details
                           Expanded(
@@ -260,13 +262,11 @@ class MemberListView extends StatelessWidget {
               );
             },
           );
-        }
-        return const SizedBox();
       },
     );
   }
 
-  Widget _buildKtpThumbnail(String? ktpPath) {
+  Widget _buildKtpThumbnail(String? ktpPath, String? ktpUrl) {
     return Container(
       width: 48,
       height: 32,
@@ -277,15 +277,50 @@ class MemberListView extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(4),
-        child: ktpPath != null && File(ktpPath).existsSync()
-            ? Image.file(
-                File(ktpPath),
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stack) => _defaultThumbnailIcon(),
-              )
-            : _defaultThumbnailIcon(),
+        child: _buildImage(ktpPath, ktpUrl),
       ),
     );
+  }
+
+  Widget _buildImage(String? ktpPath, String? ktpUrl) {
+    // 1. Try local file
+    if (ktpPath != null && File(ktpPath).existsSync()) {
+      return Image.file(
+        File(ktpPath),
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => _buildNetworkImage(ktpUrl),
+      );
+    }
+    
+    // 2. Try network URL
+    return _buildNetworkImage(ktpUrl);
+  }
+
+  Widget _buildNetworkImage(String? url) {
+    if (url != null && url.startsWith('http')) {
+      return Image.network(
+        url,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stack) => _defaultThumbnailIcon(),
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: SizedBox(
+              width: 12,
+              height: 12,
+              child: CircularProgressIndicator(
+                strokeWidth: 1,
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded /
+                        loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            ),
+          );
+        },
+      );
+    }
+    return _defaultThumbnailIcon();
   }
 
   Widget _defaultThumbnailIcon() {

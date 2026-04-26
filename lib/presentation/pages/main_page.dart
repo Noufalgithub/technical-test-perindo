@@ -25,6 +25,7 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
     context.read<MemberBloc>().add(const FetchMembers(isSynced: false));
     
     _tabController.addListener(() {
+      setState(() {});
       if (_tabController.indexIsChanging) {
         context.read<MemberBloc>().add(FetchMembers(isSynced: _tabController.index == 1));
       }
@@ -89,6 +90,14 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
             ),
           ],
         ),
+        actions: [
+          if (_tabController.index == 0)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep_outlined, color: Colors.red),
+              tooltip: 'Hapus Semua Draft',
+              onPressed: () => _showClearDatabaseDialog(context),
+            ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: const Color(0xFF2B3A67),
@@ -109,7 +118,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
           MemberListView(isSynced: true),
         ],
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: _tabController.index == 1 
+        ? null 
+        : Container(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         decoration: BoxDecoration(
           color: AppColors.background,
@@ -144,13 +155,9 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
             const SizedBox(height: 12),
             BlocBuilder<MemberBloc, MemberState>(
               builder: (context, state) {
-                bool hasDrafts = false;
-                int draftCount = 0;
-                if (state is MemberLoaded) {
-                  final drafts = state.members.where((m) => !m.isSynced).toList();
-                  hasDrafts = drafts.isNotEmpty;
-                  draftCount = drafts.length;
-                }
+                final drafts = state.draftMembers;
+                bool hasDrafts = drafts.isNotEmpty;
+                int draftCount = drafts.length;
                 return OutlinedButton(
                   onPressed: hasDrafts ? () => _showSyncDialog(context) : null,
                   style: OutlinedButton.styleFrom(
@@ -220,6 +227,34 @@ class _MainPageState extends State<MainPage> with SingleTickerProviderStateMixin
         ],
         actionsAlignment: MainAxisAlignment.center,
         actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      ),
+    );
+  }
+  void _showClearDatabaseDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hapus Semua Data?'),
+        content: const Text(
+          'Semua data draft lokal akan dihapus secara permanen. Data yang sudah di-upload tidak akan terhapus.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<MemberBloc>().add(DeleteAllMembers());
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Hapus'),
+          ),
+        ],
       ),
     );
   }

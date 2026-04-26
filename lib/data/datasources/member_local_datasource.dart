@@ -3,9 +3,10 @@ import 'package:technical_test_superindo/domain/entities/member.dart';
 
 abstract class MemberLocalDataSource {
   Future<void> saveMember(Member member);
-  Future<List<Member>> getDraftMembers();
+  Future<List<Member>> getDraftMembers(String? userId);
   Future<void> updateMemberStatus(int id, bool isSynced);
   Future<void> deleteMember(int id);
+  Future<void> deleteAllMembers();
 }
 
 class MemberLocalDataSourceImpl implements MemberLocalDataSource {
@@ -23,11 +24,11 @@ class MemberLocalDataSourceImpl implements MemberLocalDataSource {
   }
 
   @override
-  Future<List<Member>> getDraftMembers() async {
+  Future<List<Member>> getDraftMembers(String? userId) async {
     final List<Map<String, dynamic>> maps = await database.query(
       'members',
-      where: 'is_synced = ?',
-      whereArgs: [0],
+      where: 'is_synced = ? AND (user_id = ? OR (? IS NULL AND user_id IS NULL))',
+      whereArgs: [0, userId, userId],
     );
     return List.generate(maps.length, (i) => Member.fromMap(maps[i]));
   }
@@ -49,5 +50,10 @@ class MemberLocalDataSourceImpl implements MemberLocalDataSource {
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  @override
+  Future<void> deleteAllMembers() async {
+    await database.delete('members');
   }
 }

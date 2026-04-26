@@ -1,52 +1,74 @@
-# Technical Test: Register Offline
+# Technical Test: Register Offline (Member Perindo)
 
-A Flutter application for offline-first member registration.
+A robust Flutter application designed for offline-first member registration, featuring local draft management, automatic synchronization, and secure authentication.
 
-## Features
-- **Offline-First Architecture**: Save member data locally to SQLite when offline.
-- **State Management**: Implemented using **BLoC** (Business Logic Component).
-- **Media Management**: Camera integration with automatic image compression using `flutter_image_compress`.
-- **Bulk Sync**: Sync all local "Draft" members to the server once online.
-- **Secure Authentication**: Secure token storage and auth-aware API requests.
+## Key Features
+
+- **Offline-First Workflow**: Save member data locally in a "Draft" state when internet is unavailable.
+- **Bulk Synchronization**: One-tap "Upload Semua" feature with sequential async processing and error tracking.
+- **User Isolation**: Local data is filtered by `userId`, ensuring multi-user privacy on the same device.
+- **Dynamic Form Validation**: Real-time validation for NIK (ID Number), required fields, and multi-part image uploads.
+- **Media Management**: Integrated camera capture with automatic compression using `flutter_image_compress`.
+- **Global Auth Handling**: Automatic redirect to login on `401 Unauthorized` responses via custom `AuthInterceptor`.
+- **Interactive UI**: Tabbed navigation between "Draft" and "Sudah Di-upload" with real-time status updates.
 
 ## Tech Stack
-- **Framework**: Flutter
-- **State Management**: `flutter_bloc`
-- **Database**: `sqflite` (SQLite)
-- **Networking**: `dio`
-- **Dependency Injection**: `get_it`
-- **Local Storage**: `flutter_secure_storage`
+
+| Layer | Technology |
+|---|---|
+| **Framework** | Flutter (Dart) |
+| **State Management** | `flutter_bloc` (BLoC Pattern) |
+| **Database** | `sqflite` (SQLite) with multi-version migration |
+| **Networking** | `dio` + `PrettyDioLogger` |
+| **DI / Service Locator** | `get_it` |
+| **Security** | `flutter_secure_storage` |
+| **Functional Programming** | `dartz` (Either type for Error Handling) |
+
+## Architecture (Clean Architecture)
+
+The project follows a modular structure based on Clean Architecture principles:
+
+- **Core**: Cross-cutting concerns like API interceptors, error handling, themes, and service locator.
+- **Data**: Data sources (Local/Remote) and repository implementations.
+- **Domain**: Pure business logic (Entities and Repository interfaces).
+- **Presentation**: UI layer consisting of BLoCs, Pages, and reusable Widgets.
 
 ## Project Structure
 ```text
 lib/
 ├── core/
-│   ├── api/          # Dio configuration & Auth interceptor
-│   ├── database/     # SQLite configuration
-│   ├── error/        # Failure & Exception classes
-│   ├── utils/        # Constants & Service locator
+│   ├── api/          # Dio config, Interceptors, & Auth management
+│   ├── error/        # Failures & Error handlers
+│   ├── theme/        # App color schemes and styles
+│   └── utils/        # Constants, Validation, & Service locator
 ├── data/
-│   ├── datasources/  # Remote & Local data sources
-│   ├── repositories/ # Repository implementations
+│   ├── datasources/  # Member (SQLite/Rest) & Location data sources
+│   ├── models/       # Data models (optional/entities)
+│   └── repositories/ # Concrete implementation of repositories
 ├── domain/
-│   ├── entities/     # Member entity
-│   ├── repositories/ # Repository interfaces
+│   ├── entities/     # Member, User, & Location business objects
+│   └── repositories/ # Abstract contracts for data access
 └── presentation/
-    ├── bloc/         # Auth, Member, and Profile BLoCs
-    ├── pages/        # Main screens (Login, Dashboard, Form, Profile)
-    └── widgets/      # Reusable UI components
+    ├── bloc/         # BLoCs: Member (Sync), Auth, Location, Profile
+    ├── pages/        # Login, Main Dashboard, Member Form, Profile
+    └── widgets/      # Member List, Location Dropdowns, Info Banners
 ```
 
-## How to Run
-1. Ensure you have Flutter installed (Stable channel).
-2. Clone this repository.
-3. Run `flutter pub get` to install dependencies.
-4. Run the app:
+## Getting Started
+
+1. **Install Dependencies**:
+   ```bash
+   flutter pub get
+   ```
+
+2. **Run the App**:
    ```bash
    flutter run
    ```
 
-## Key Highlights
-- **Clean Architecture**: Separation of concerns between Data, Domain, and Presentation layers.
-- **Image Optimization**: Images are compressed before being saved/uploaded to reduce storage and bandwidth usage.
-- **Error Handling**: Uses `dartz` for functional error handling with the `Either` type.
+## Recent Updates
+- **v3 Migration**: Added `user_id` column to SQLite for multi-account support.
+- **Enhanced Sync**: Refactored `SyncAllMembers` logic to handle large batches reliably.
+- **Auth Polish**: Implemented global `navigatorKey` for instant 401 redirects and token trimming to fix sensitivity issues.
+- **Validation**: Added `*` indicators and mandatory field checks for "Nama Lengkap".
+- **Reset Feature**: Added "Clear Database" functionality with confirmation dialog for developers.

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -22,8 +23,12 @@ import 'package:technical_test_superindo/data/datasources/location_remote_dataso
 import 'package:technical_test_superindo/data/repositories/location_repository_impl.dart';
 
 final sl = GetIt.instance;
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> init() async {
+  //! Navigator
+  sl.registerLazySingleton(() => navigatorKey);
+
   //! External
   sl.registerLazySingleton(() {
     final dio = Dio(BaseOptions(
@@ -31,7 +36,7 @@ Future<void> init() async {
       connectTimeout: const Duration(seconds: 30),
       receiveTimeout: const Duration(seconds: 30),
     ));
-    dio.interceptors.add(AuthInterceptor(sl()));
+    dio.interceptors.add(AuthInterceptor(sl(), sl()));
     dio.interceptors.add(PrettyDioLogger(
       requestHeader: true,
       requestBody: true,
@@ -51,7 +56,7 @@ Future<void> init() async {
   final path = join(databasePath, 'member_offline.db');
   final database = await openDatabase(
     path,
-    version: 2,
+    version: 3,
     onCreate: (db, version) async {
       await db.execute('''
         CREATE TABLE members (
@@ -78,6 +83,7 @@ Future<void> init() async {
           kode_pos_domisili TEXT,
           ktp_path TEXT,
           ktp_secondary_path TEXT,
+          user_id TEXT,
           is_synced INTEGER DEFAULT 0
         )
       ''');
@@ -87,6 +93,12 @@ Future<void> init() async {
         // Migration: add gender column
         await db.execute(
           "ALTER TABLE members ADD COLUMN gender TEXT DEFAULT 'Laki-laki'",
+        );
+      }
+      if (oldVersion < 3) {
+        // Migration: add user_id column
+        await db.execute(
+          "ALTER TABLE members ADD COLUMN user_id TEXT",
         );
       }
     },
@@ -107,6 +119,7 @@ Future<void> init() async {
   sl.registerLazySingleton<MemberRepository>(() => MemberRepositoryImpl(
     localDataSource: sl(),
     remoteDataSource: sl(),
+    secureStorage: sl(),
   ));
   sl.registerLazySingleton<LocationRepository>(() => LocationRepositoryImpl(
     remoteDataSource: sl(),

@@ -28,6 +28,7 @@ class MyApp extends StatelessWidget {
         title: 'Register Offline',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
+        navigatorKey: di.navigatorKey,
         home: const SplashPage(),
         builder: (context, child) {
           return SafeArea(

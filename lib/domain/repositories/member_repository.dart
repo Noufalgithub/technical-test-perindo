@@ -7,4 +7,5 @@ abstract class MemberRepository {
   Future<Either<Failure, List<Member>>> getDraftMembers();
   Future<Either<Failure, List<Member>>> getSyncedMembers();
   Future<Either<Failure, void>> syncMember(Member member);
+  Future<Either<Failure, void>> deleteAllMembers();
 }

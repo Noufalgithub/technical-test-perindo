@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Member extends Equatable {
   final int? id;
+  final String? userId;
   final String name;
   final String nik;
   final String phone;
@@ -30,6 +31,7 @@ class Member extends Equatable {
 
   const Member({
     this.id,
+    this.userId,
     required this.name,
     required this.nik,
     required this.phone,
@@ -82,6 +84,7 @@ class Member extends Equatable {
       'kode_pos_domisili': kodePosDomisili,
       'ktp_path': ktpPath,
       'ktp_secondary_path': ktpSecondaryPath,
+      'user_id': userId,
       'is_synced': isSynced ? 1 : 0,
     };
   }
@@ -89,6 +92,7 @@ class Member extends Equatable {
   factory Member.fromMap(Map<String, dynamic> map) {
     return Member(
       id: map['id'] is int ? map['id'] : int.tryParse(map['id']?.toString() ?? ''),
+      userId: map['user_id']?.toString(),
       name: map['name']?.toString() ?? map['full_name']?.toString() ?? '',
       nik: map['nik']?.toString() ?? '',
       phone: map['phone']?.toString() ?? '',
@@ -120,6 +124,7 @@ class Member extends Equatable {
   @override
   List<Object?> get props => [
         id,
+        userId,
         name,
         nik,
         phone,
